@@ -38,7 +38,6 @@ namespace Kesa.Tsushin
             }
             else
             {
-                Console.WriteLine("Registering type " + typeName);
                 var newId = Interlocked.Increment(ref _lastId);
                 var newInfo = new PacketTypeInfo()
                 {
