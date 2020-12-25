@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kesa.Tsushin", "Kesa.Tsushin\Kesa.Tsushin.csproj", "{3698CD6D-A970-4D7C-A61B-30F0CD4CF0F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kesa.Tsushin.Testing", "Kesa.Tsushin.Testing\Kesa.Tsushin.Testing.csproj", "{719AFB63-C3EA-4045-9C07-2510FF588D36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3698CD6D-A970-4D7C-A61B-30F0CD4CF0F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3698CD6D-A970-4D7C-A61B-30F0CD4CF0F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3698CD6D-A970-4D7C-A61B-30F0CD4CF0F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3698CD6D-A970-4D7C-A61B-30F0CD4CF0F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{719AFB63-C3EA-4045-9C07-2510FF588D36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{719AFB63-C3EA-4045-9C07-2510FF588D36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{719AFB63-C3EA-4045-9C07-2510FF588D36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{719AFB63-C3EA-4045-9C07-2510FF588D36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {639D1628-6C72-403B-816A-464C8D59BF18}
+	EndGlobalSection
+EndGlobal
