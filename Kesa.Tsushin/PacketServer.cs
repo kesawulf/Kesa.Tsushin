@@ -58,9 +58,7 @@ namespace Kesa.Tsushin
         internal void HandleConnectionAccepted(PacketServerConnection connection)
         {
             ConnectionsList.Add(connection);
-
             ConnectionAccepted?.Invoke(this, new PacketServerConnectionAcceptedEventArgs(connection));
-
             Listener.BeginAcceptTcpClient(OnConnectionAccepted, null);
         }
 

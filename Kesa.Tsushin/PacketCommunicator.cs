@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kesa.Tsushin
@@ -38,24 +39,28 @@ namespace Kesa.Tsushin
             Reader = new BinaryReader(stream, Encoding.UTF8, true);
             Writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
-            Task.Factory.StartNew(ReadLoop);
-            Task.Factory.StartNew(SendLoop);
+            thread(ReadLoop);
+            thread(SendLoop);
+
+            void thread(Action act) => new Thread(new ThreadStart(act)) { IsBackground = true }.Start();
         }
 
         private void SendLoop()
         {
             Try(() =>
             {
-                var packet = Packets.Take();
+                while (!IsDisposed)
+                {
+                    var packet = Packets.Take();
 
-                Writer.Write((byte)0x02);
-                Writer.Write(packet.Id);
-                packet.WriteTo(Writer);
-                Writer.Write((byte)0x03);
-                Writer.Flush();
+                    Writer.Write((byte)0x02);
+                    Writer.Write(packet.Id);
+                    packet.WriteTo(Writer);
+                    Writer.Write((byte)0x03);
+                    Writer.Flush();
 
-                PacketSent?.Invoke(this, new PacketSentEventArgs(Connection, packet));
-                Task.Factory.StartNew(SendLoop);
+                    PacketSent?.Invoke(this, new PacketSentEventArgs(Connection, packet));
+                }
             });
         }
 
@@ -63,14 +68,9 @@ namespace Kesa.Tsushin
         {
             Try(() =>
             {
-                if (Read() is Packet packet)
+                while (!IsDisposed && Read() is Packet packet)
                 {
                     PacketReceived?.Invoke(this, new PacketReceivedEventArgs(Connection, packet));
-
-                    if (!IsDisposed)
-                    {
-                        Task.Factory.StartNew(ReadLoop);
-                    }
                 }
             });
         }
@@ -117,6 +117,10 @@ namespace Kesa.Tsushin
         {
             if (disposeManagedObjects)
             {
+                PacketReceived = null;
+                PacketSent = null;
+                ErrorOccurred = null;
+
                 Reader.Dispose();
                 Writer.Dispose();
                 Packets.Dispose();

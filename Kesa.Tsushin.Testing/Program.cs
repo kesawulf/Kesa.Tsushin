@@ -31,21 +31,20 @@ namespace Kesa.Tsushin.Testing
 
             server.PacketReceived += (s, e) =>
             {
-                if (sw.ElapsedMilliseconds > 1000)
-                {
-                    Console.WriteLine($"Mirrored {pc} packets.");
-                    sw.Restart();
-                    pc = 0;
-                }
-
                 e.Connection.Communicator.Send(e.Packet);
-
                 pc++;
+            };
+
+            client.PacketReceived += (s, e) =>
+            {
+                e.Connection.Communicator.Send(e.Packet);
             };
 
             while (true)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
+                Console.WriteLine($"Mirrored {pc} packets.");
+                pc = 0;
             }
         }
     }
