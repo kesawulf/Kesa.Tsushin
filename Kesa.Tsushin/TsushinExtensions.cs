@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Kesa.Tsushin
+﻿namespace Kesa.Tsushin
 {
     public static class TsushinExtensions
     {

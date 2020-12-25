@@ -2,17 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Kesa.Tsushin
 {
-    public class PacketCommunicatorErrorOccurredEventArgs : EventArgs
-    {
-    }
-
     public class PacketCommunicator : DisposableBase
     {
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
@@ -74,7 +68,7 @@ namespace Kesa.Tsushin
             {
                 while (!IsDisposed && Read() is Packet packet)
                 {
-                    if (packet is TypeNotificationPacket typePacket)
+                    if (packet is TypeRegistrationPacket typePacket)
                     {
                         var type = Type.GetType(typePacket.FullTypeName);
                         Registry.Register(type);
@@ -92,9 +86,9 @@ namespace Kesa.Tsushin
             {
                 action();
             }
-            catch
+            catch (Exception ex)
             {
-                ErrorOccurred?.Invoke(this, new PacketCommunicatorErrorOccurredEventArgs());
+                ErrorOccurred?.Invoke(this, new PacketCommunicatorErrorOccurredEventArgs(ex));
             }
         }
 
@@ -124,7 +118,7 @@ namespace Kesa.Tsushin
 
             if (NotifiedTypes.Add(pType))
             {
-                Packets.Add(new TypeNotificationPacket() { FullTypeName = pType.AssemblyQualifiedName });
+                Packets.Add(new TypeRegistrationPacket() { FullTypeName = pType.AssemblyQualifiedName });
             }
 
             Registry.Register(pType);

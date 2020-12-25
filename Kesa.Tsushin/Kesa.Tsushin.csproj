@@ -41,11 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircularBuffer.cs" />
     <Compile Include="DisposableBase.cs" />
     <Compile Include="IPacketReceiver.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PackerClientPacketReceivedEventArgs.cs" />
+    <Compile Include="PacketCommunicatorErrorOccurredEventArgs.cs" />
     <Compile Include="PacketConnectionBase.cs" />
     <Compile Include="PacketEventArgsBase.cs" />
     <Compile Include="PacketReceivedEventArgs.cs" />
@@ -60,6 +60,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TsushinExtensions.cs" />
     <Compile Include="TsushinUtilities.cs" />
+    <Compile Include="TypeRegistrationPacket.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

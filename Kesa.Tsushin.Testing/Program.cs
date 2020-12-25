@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Kesa.Tsushin.Testing
 {
     public static class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
             MirrorRateTesting();
 
@@ -58,14 +54,17 @@ namespace Kesa.Tsushin.Testing
                     e.Connection.Communicator.Send(new PingPacket() { Value = pongPacket.Value + 1 });
                 }
 
-                if (e.Connection is PacketClient && sw.ElapsedMilliseconds > 1000)
+                if (e.Connection is PacketClient)
                 {
-                    Console.WriteLine($"Mirrored {pc / 2} packets.");
-                    pc = 0;
-                    sw.Restart();
-                }
+                    pc++;
 
-                pc++;
+                    if (sw.ElapsedMilliseconds > 1000)
+                    {
+                        Console.WriteLine($"Mirrored {pc} packets.");
+                        pc = 0;
+                        sw.Restart();
+                    }
+                }
             }
         }
     }

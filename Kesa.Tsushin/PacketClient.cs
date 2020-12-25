@@ -16,7 +16,7 @@ namespace Kesa.Tsushin
         public PacketRegistry Registry { get; }
 
         public override PacketCommunicator Communicator => _communicator;
-        
+
         public PacketClient(string ip, int port)
         {
             Ip = ip;
@@ -41,7 +41,7 @@ namespace Kesa.Tsushin
 
                 return true;
             }
-            
+
             client.Dispose();
             return false;
         }

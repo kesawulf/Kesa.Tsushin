@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 
@@ -25,7 +23,7 @@ namespace Kesa.Tsushin
         {
             PacketInfo = new Dictionary<string, PacketTypeInfo>();
             PacketLookup = new Dictionary<int, PacketTypeInfo>();
-            Register(typeof(TypeNotificationPacket));
+            Register(typeof(TypeRegistrationPacket));
         }
 
         public int Register(Type type)
