@@ -3,54 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace Kesa.Tsushin
 {
     public class PacketRegistry
     {
-        private List<PacketRegistryPacketInfo> Packets { get; }
+        private class PacketTypeInfo
+        {
+            public int Id { get; set; }
+            public Type Type { get; set; }
+        }
+
+        private Dictionary<string, PacketTypeInfo> PacketInfo { get; }
+
+        private Dictionary<int, PacketTypeInfo> PacketLookup { get; }
+
+        private int _lastId;
 
         public PacketRegistry()
         {
-            Packets = new List<PacketRegistryPacketInfo>();
+            PacketInfo = new Dictionary<string, PacketTypeInfo>();
+            PacketLookup = new Dictionary<int, PacketTypeInfo>();
+            Register(typeof(TypeNotificationPacket));
         }
 
-        public void Register<T>() where T : Packet
+        public int Register(Type type)
         {
-            Register(typeof(T));
-        }
+            var typeName = type.AssemblyQualifiedName;
 
-        public void Register(Type type)
-        {
-            var instance = (Packet)FormatterServices.GetUninitializedObject(type);
-
-            Packets.Add(new PacketRegistryPacketInfo()
+            if (PacketInfo.TryGetValue(typeName, out var info))
             {
-                Id = instance.Id,
-                PacketType = type
-            });
-        }
+                return info.Id;
+            }
+            else
+            {
+                Console.WriteLine("Registering type " + typeName);
+                var newId = Interlocked.Increment(ref _lastId);
+                var newInfo = new PacketTypeInfo()
+                {
+                    Id = newId,
+                    Type = type
+                };
 
-        public void Register(Assembly assembly)
-        {
-            assembly.GetTypes()
-                .Where(t => typeof(Packet).IsAssignableFrom(t))
-                .Where(t => t != typeof(Packet))
-                .ToList()
-                .ForEach(Register);
-        }
-
-        public void RegisterFromCurrentAssembly()
-        {
-            Register(Assembly.GetCallingAssembly());
+                PacketInfo[type.AssemblyQualifiedName] = newInfo;
+                PacketLookup[newId] = newInfo;
+                return newId;
+            }
         }
 
         public Packet GetPacketInstance(byte id)
         {
-            var packetInfo = Packets.FirstOrDefault(p => p.Id == id);
-            if (packetInfo != null)
+            if (PacketLookup.TryGetValue(id, out var info))
             {
-                return (Packet)FormatterServices.GetUninitializedObject(packetInfo.PacketType);
+                return (Packet)FormatterServices.GetUninitializedObject(info.Type);
             }
 
             return null;

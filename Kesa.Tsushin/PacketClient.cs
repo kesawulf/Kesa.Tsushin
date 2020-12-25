@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace Kesa.Tsushin
 {
-    public class PacketClient : PacketConnectionBase
+    public class PacketClient : PacketConnectionBase, IPacketReceiver
     {
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 

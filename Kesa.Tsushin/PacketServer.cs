@@ -1,13 +1,29 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Kesa.Tsushin
 {
-    public class PacketServer
+    public class TypeNotificationPacket : Packet
+    {
+        public string FullTypeName { get; set; }
+
+        public override void ReadFrom(BinaryReader stream)
+        {
+            FullTypeName = stream.ReadString();
+        }
+
+        public override void WriteTo(BinaryWriter stream)
+        {
+            stream.Write(FullTypeName);
+        }
+    }
+
+    public class PacketServer : IPacketReceiver
     {
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 

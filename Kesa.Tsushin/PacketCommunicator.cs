@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using System.Text;
@@ -30,6 +31,8 @@ namespace Kesa.Tsushin
 
         private BinaryWriter Writer { get; }
 
+        private HashSet<Type> NotifiedTypes { get; }
+
         public PacketCommunicator(PacketConnectionBase connection, Stream stream, PacketRegistry registry)
         {
             Registry = registry;
@@ -38,6 +41,7 @@ namespace Kesa.Tsushin
             Packets = new BlockingCollection<Packet>();
             Reader = new BinaryReader(stream, Encoding.UTF8, true);
             Writer = new BinaryWriter(stream, Encoding.UTF8, true);
+            NotifiedTypes = new HashSet<Type>();
 
             thread(ReadLoop);
             thread(SendLoop);
@@ -54,7 +58,7 @@ namespace Kesa.Tsushin
                     var packet = Packets.Take();
 
                     Writer.Write((byte)0x02);
-                    Writer.Write(packet.Id);
+                    Writer.Write((byte)Registry.Register(packet.GetType()));
                     packet.WriteTo(Writer);
                     Writer.Write((byte)0x03);
                     Writer.Flush();
@@ -70,6 +74,13 @@ namespace Kesa.Tsushin
             {
                 while (!IsDisposed && Read() is Packet packet)
                 {
+                    if (packet is TypeNotificationPacket typePacket)
+                    {
+                        var type = Type.GetType(typePacket.FullTypeName);
+                        Registry.Register(type);
+                        NotifiedTypes.Add(type);
+                    }
+
                     PacketReceived?.Invoke(this, new PacketReceivedEventArgs(Connection, packet));
                 }
             });
@@ -94,7 +105,6 @@ namespace Kesa.Tsushin
                 if (Reader.ReadByte() == 0x02)
                 {
                     var packetId = Reader.ReadByte();
-
                     var packet = Registry.GetPacketInstance(packetId);
                     packet.ReadFrom(Reader);
 
@@ -110,6 +120,14 @@ namespace Kesa.Tsushin
 
         public void Send(Packet packet)
         {
+            var pType = packet.GetType();
+
+            if (NotifiedTypes.Add(pType))
+            {
+                Packets.Add(new TypeNotificationPacket() { FullTypeName = pType.AssemblyQualifiedName });
+            }
+
+            Registry.Register(pType);
             Packets.Add(packet);
         }
 
